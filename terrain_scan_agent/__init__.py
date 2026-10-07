@@ -3,6 +3,8 @@
 from .camera_capture import CameraCapture
 from .control import Controller
 from .drone_adapter import DroneAdapter
+from .lidar_capture import LidarCapture
+from .live_camera import LiveCameraCapture
 from .mavlink_adapter import MAVLinkAdapter
 from .mission import create_mission, evaluate_safety
 from .planner import build_action_plan, generate_vehicle_commands
@@ -26,6 +28,8 @@ __all__ = [
     "SensorStream",
     "SensorFusion",
     "CameraCapture",
+    "LiveCameraCapture",
+    "LidarCapture",
     "ProcessingPipeline",
     "Controller",
     "DroneAdapter",

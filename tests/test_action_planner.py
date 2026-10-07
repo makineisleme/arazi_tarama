@@ -195,3 +195,34 @@ def test_sensor_fusion_combines_camera_lidar_and_gps():
     assert result["frame_count"] == 1
     assert result["obstacle_detected"] is True
     assert result["gps_points"] == 1
+
+
+def test_live_camera_capture_reads_live_frames():
+    from terrain_scan_agent.live_camera import LiveCameraCapture
+
+    camera = LiveCameraCapture("front_cam", source=0, fallback=True)
+    frame = camera.capture_frame()
+
+    assert frame["sensor"] == "front_cam"
+    assert frame["source"] == 0
+    assert "frame_id" in frame
+    assert "shape" in frame
+    assert camera.frame_count() >= 1
+
+
+def test_lidar_capture_tracks_obstacle_ranges():
+    from terrain_scan_agent.lidar_capture import LidarCapture
+
+    lidar = LidarCapture("front_lidar")
+    scan = lidar.capture_scan(
+        [
+            {"angle_deg": 0, "distance_m": 2.4},
+            {"angle_deg": 45, "distance_m": 0.9},
+            {"angle_deg": 90, "distance_m": 7.5},
+        ]
+    )
+
+    assert scan["sensor"] == "front_lidar"
+    assert scan["sample_count"] == 3
+    assert scan["obstacle_count"] == 1
+    assert lidar.scan_count() == 1

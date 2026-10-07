@@ -15,12 +15,13 @@ Amaç, kamera ve sensör tabanlı arazi tarama için yerleşik/embedded yapay ze
 - [x] Görsel/scan risk analizi hazır
 - [x] Kullanıcı çıktısı için özetleme katmanı hazır
 - [x] Kamera yakalama modülü eklendi
+- [x] Canlı kamera katmanı eklendi
+- [x] LiDAR tarama modülü eklendi
 - [x] Sensör füzyon katmanı eklendi
 - [x] Tüm çalışma akışı örnek girişten çalıştırılabilir durumda
 
 ### Yapılmadı / devam edenler
-- [ ] Gerçek kamera akışı (USB/RTSP/OpenCV canlı akışı)
-- [ ] Gerçek LiDAR verisi ve nokta bulutu işleme
+- [ ] Gerçek USB/RTSP/OpenCV canlı kamera akışı için saha kurulumu
 - [ ] Gerçek GPS/IMU sensör akışı ile canlı korelasyon
 - [ ] ROS2 katmanı ve topic publish/subscribe eklenmesi
 - [ ] MAVLink/PX4 drone kontrol entegrasyonu
@@ -52,6 +53,8 @@ Amaç, kamera ve sensör tabanlı arazi tarama için yerleşik/embedded yapay ze
 - [x] `analyze_scan()` ile risk seviyesini hesaplama
 - [x] Anomali ve engel yoğunluğuna göre yüksek/orta/düşük risk
 - [x] `CameraCapture` ile frame takibi
+- [x] `LiveCameraCapture` ile canlı kamera akışı ve fallback desteği
+- [x] `LidarCapture` ile LiDAR tarama ve engel tespiti
 - [x] `SensorFusion` ile kamera + LiDAR + GPS birleşimi
 
 ### 3.6 Kullanıcı arayüzü / özetleme
