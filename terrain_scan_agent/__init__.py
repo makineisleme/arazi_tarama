@@ -12,6 +12,7 @@ from .planner import build_action_plan, generate_vehicle_commands
 from .processor import ProcessingPipeline
 from .robot_adapter import RobotAdapter
 from .ros_bridge import ROSBridge
+from .ros_mavlink_bridge import ROSMAVLinkBridge
 from .safety import SafetyManager
 from .sensor_fusion import SensorFusion
 from .sensor_stream import SensorStream
@@ -37,6 +38,7 @@ __all__ = [
     "DroneAdapter",
     "RobotAdapter",
     "ROSBridge",
+    "ROSMAVLinkBridge",
     "MAVLinkAdapter",
     "TopicController",
     "SafetyManager",

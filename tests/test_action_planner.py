@@ -244,3 +244,18 @@ def test_navigation_fusion_combines_gps_and_imu():
     assert result["imu_points"] == 1
     assert result["yaw_deg"] == 15.0
     assert result["position_ready"] is True
+
+
+def test_ros2_mavlink_bridge_emits_vehicle_commands():
+    from terrain_scan_agent.ros_mavlink_bridge import ROSMAVLinkBridge
+
+    bridge = ROSMAVLinkBridge(vehicle="drone")
+    result = bridge.send([
+        {"topic": "/mavros/set_mode", "message": {"mode": "AUTO.MISSION"}},
+        {"topic": "/mavros/cmd/arming", "message": {"value": True}},
+    ])
+
+    assert result["status"] == "ok"
+    assert result["vehicle"] == "drone"
+    assert result["published_count"] == 2
+    assert result["topics"][0] == "/mavros/set_mode"
