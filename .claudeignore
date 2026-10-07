@@ -1,0 +1,41 @@
+# Local environment and generated files
+.venv/
+.env/
+.env*
+__pycache__/
+.pytest_cache/
+.git/
+.gitignore
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.tmp
+
+# Build and runtime outputs
+build/
+dist/
+out/
+reports/
+logs/
+coverage/
+.cache/
+
+# IDE/editor artifacts
+.vscode/
+.DS_Store
+.idea/
+
+# Large binary data
+*.png
+*.jpg
+*.jpeg
+*.mp4
+*.mov
+*.zip
+*.tar
+*.gz
+
+# Local data directories
+data/
+output/

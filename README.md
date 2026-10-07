@@ -13,6 +13,7 @@ Bu proje, kamera ve sensör tabanlı arazi tarama için modüler bir örnek mima
 - PX4 benzeri güvenli uçuş komut katmanı
 - Saha çalışma akışı: canlı tarama + raporlama
 - gerçek kamera / GPS-IMU / mini dashboard entegre katmanları
+- gerçek cihaz benzeri veri akışı için fallback ve simülasyon desteği
 
 ## Mevcut mimari
 
@@ -65,7 +66,7 @@ Son doğrulama sonucu:
 
 ## Geliştirme hedefi
 
-Bu prototip, gerçek dünya entegrasyonu için temel iskelet ve güvenli operasyon modeli sunar. Bir sonraki adım, gerçek kamera, GPS/IMU ve PX4/MAVLink canlı akışı ile saha testlerine geçmektir.
+Bu prototip, gerçek dünya entegrasyonu için temel iskelet ve güvenli operasyon modeli sunar. Mevcut sürüm, simülasyon ve gerçek cihaz benzeri akışlar için hazır bir temel sağlamaktadır; bir sonraki adım gerçek kamera, GPS/IMU ve PX4/MAVLink canlı akışı ile saha testlerine geçmektir.
 
 ## Not
 

@@ -69,10 +69,12 @@ Amaç, kamera ve sensör tabanlı arazi tarama için modüler bir prototype kurm
 ### 3.6 Saha çalışma runtime katmanı
 - [x] FieldRuntime ile canlı tarama akışı bütünleşmesi
 - [x] Kamera, kontrol ve navigasyon tek akışta koordine edilmesi
+- [x] Gerçek cihaz benzeri akış ve fallback desteği
 - [x] Toplu rapor üretimi
 
 ### 3.7 Kullanıcı arayüzü / özetleme
 - [x] render_summary ile net rapor çıktısı
+- [x] dashboard HTML rapor arayüzü
 
 ## 4. Mevcut test durumu
 
@@ -124,4 +126,4 @@ Bir sonraki evrede şunlar yapılabilir:
 
 ## 7. Kısa özet
 
-Proje şu anda kapsamlı bir prototype seviyesindedir: doğal dil komutunu alır, güvenli operasyon planı üretir, araç komutlarını çevirir, sensörleri yönetir, risk analizi yapar ve canlı saha runtime içinde kamera, navigasyon ve kontrol katmanlarını birlikte koordine eder. Geriye kalan iş, bunları gerçek cihaz akışları ve saha entegrasyonu ile canlı sistem seviyesine taşımaktır.
+Proje şu anda kapsamlı bir prototype seviyesindedir: doğal dil komutunu alır, güvenli operasyon planı üretir, araç komutlarını çevirir, sensörleri yönetir, risk analizi yapar, canlı saha runtime içinde kamera, navigasyon ve kontrol katmanlarını birlikte koordine eder ve gerçek cihaz benzeri veri akışları için hazır bir taban sunar. Geriye kalan iş, bunları gerçek cihaz akışları ve saha entegrasyonu ile canlı sistem seviyesine taşımaktır.
