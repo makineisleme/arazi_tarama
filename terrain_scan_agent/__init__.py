@@ -7,6 +7,7 @@ from .lidar_capture import LidarCapture
 from .live_camera import LiveCameraCapture
 from .mavlink_adapter import MAVLinkAdapter
 from .mission import create_mission, evaluate_safety
+from .navigation_fusion import NavigationFusion
 from .planner import build_action_plan, generate_vehicle_commands
 from .processor import ProcessingPipeline
 from .robot_adapter import RobotAdapter
@@ -27,6 +28,7 @@ __all__ = [
     "SensorManager",
     "SensorStream",
     "SensorFusion",
+    "NavigationFusion",
     "CameraCapture",
     "LiveCameraCapture",
     "LidarCapture",

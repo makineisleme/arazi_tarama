@@ -226,3 +226,21 @@ def test_lidar_capture_tracks_obstacle_ranges():
     assert scan["sample_count"] == 3
     assert scan["obstacle_count"] == 1
     assert lidar.scan_count() == 1
+
+
+def test_navigation_fusion_combines_gps_and_imu():
+    from terrain_scan_agent.navigation_fusion import NavigationFusion
+
+    nav = NavigationFusion()
+    result = nav.combine(
+        {
+            "gps": [{"lat": 39.0, "lon": 35.0, "altitude_m": 7.0}],
+            "imu": [{"roll": 0.1, "pitch": 0.2, "yaw": 15.0}],
+        }
+    )
+
+    assert result["status"] == "active"
+    assert result["gps_points"] == 1
+    assert result["imu_points"] == 1
+    assert result["yaw_deg"] == 15.0
+    assert result["position_ready"] is True

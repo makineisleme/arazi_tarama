@@ -17,12 +17,14 @@ Amaç, kamera ve sensör tabanlı arazi tarama için yerleşik/embedded yapay ze
 - [x] Kamera yakalama modülü eklendi
 - [x] Canlı kamera katmanı eklendi
 - [x] LiDAR tarama modülü eklendi
+- [x] GPS/IMU navigasyon füzyon katmanı eklendi
 - [x] Sensör füzyon katmanı eklendi
 - [x] Tüm çalışma akışı örnek girişten çalıştırılabilir durumda
 
 ### Yapılmadı / devam edenler
 - [ ] Gerçek USB/RTSP/OpenCV canlı kamera akışı için saha kurulumu
 - [ ] Gerçek GPS/IMU sensör akışı ile canlı korelasyon
+- [ ] ROS2 topic / MAVLink / PX4 kontrol entegrasyonu
 - [ ] ROS2 katmanı ve topic publish/subscribe eklenmesi
 - [ ] MAVLink/PX4 drone kontrol entegrasyonu
 - [ ] Harita / risk haritası / görsel raporlama çıktısı
