@@ -288,7 +288,7 @@ def run_dashboard_server(
     dashboard_payload: Optional[Dict[str, Any]] = None,
     *,
     host: str = "127.0.0.1",
-    port: int = 8000,
+    port: int = 8023,
     camera_source: int | str = 0,
     camera_fallback: bool = True,
     fps: float = 8.0,
@@ -322,7 +322,7 @@ def _parse_camera_source(value: str) -> int | str:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Arazi tarama canlı web dashboard'u")
     parser.add_argument("--host", default="127.0.0.1", help="Dinlenecek adres (varsayılan: 127.0.0.1)")
-    parser.add_argument("--port", type=int, default=8000, help="HTTP portu (varsayılan: 8000)")
+    parser.add_argument("--port", type=int, default=8023, help="HTTP portu (varsayılan: 8023)")
     parser.add_argument(
         "--camera",
         type=_parse_camera_source,

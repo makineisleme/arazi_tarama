@@ -20,6 +20,7 @@ Kamera ve sensör tabanlı arazi taraması için modüler bir drone/robot protot
 - [x] Dashboard'un önceki JSON raporunu yükleyebilmesi
 - [x] Kamera URL kullanıcı bilgileri ve query parametrelerinin API'de gizlenmesi
 - [x] Paket kurulumu ve `terrain-scan-dashboard` komutu
+- [x] Dashboard varsayılan portu 8023 olarak ayarlandı
 - [x] Dashboard güvenlik/endpoint/stream davranışları için testler
 
 ### Devam ediyor / donanımda doğrulanmadı

@@ -48,9 +48,9 @@ terrain-scan-dashboard --camera /dev/video0 --report artifacts/mission_report.js
 
 Uygulama:
 
-- Dashboard: `http://127.0.0.1:8000/`
-- MJPEG video: `http://127.0.0.1:8000/stream.mjpg`
-- JSON durum: `http://127.0.0.1:8000/api/status`
+- Dashboard: `http://127.0.0.1:8023/`
+- MJPEG video: `http://127.0.0.1:8023/stream.mjpg`
+- JSON durum: `http://127.0.0.1:8023/api/status`
 
 Kamera kullanılamıyorsa varsayılan fallback sentetik placeholder frame sunar. Bu durum API'de `camera.status` alanında belirtilir. Fallback olmadan çalıştırmak için `--no-camera-fallback` ekleyin. URL'deki kullanıcı bilgileri ve query parametreleri API'de maskelenir.
 

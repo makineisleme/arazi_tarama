@@ -53,9 +53,9 @@ terrain-scan-dashboard --camera /dev/video0 --report artifacts/mission_report.js
 
 Varsayılan adresler:
 
-- Dashboard: `http://127.0.0.1:8000/`
-- Kamera akışı: `http://127.0.0.1:8000/stream.mjpg`
-- Durum API'si: `http://127.0.0.1:8000/api/status`
+- Dashboard: `http://127.0.0.1:8023/`
+- Kamera akışı: `http://127.0.0.1:8023/stream.mjpg`
+- Durum API'si: `http://127.0.0.1:8023/api/status`
 
 Kamera açılamazsa sunucu varsayılan olarak bir placeholder görüntüsü yayınlar ve API'de `fallback` durumunu bildirir. Fallback'i kapatmak için `--no-camera-fallback` kullanın. Sunucu varsayılan olarak yalnızca `127.0.0.1` üzerinde dinler. `--host 0.0.0.0` ile ağ arayüzlerine açılabilir; ancak kimlik doğrulama veya TLS sunucuya dahil değildir. Bunu yalnızca güvenilir ağda, uygun erişim denetimi/ters proxy arkasında kullanın. Kamera URL'sindeki kullanıcı adı, parola ve query parametreleri status API yanıtında maskelenir.
 
