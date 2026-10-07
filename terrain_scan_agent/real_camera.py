@@ -7,7 +7,7 @@ from typing import Any, Dict, Optional
 class RealCameraReader:
     """Read real camera frames when OpenCV is present, otherwise fall back to synthetic data."""
 
-    def __init__(self, sensor_name: str = "front_cam", source: int = 0) -> None:
+    def __init__(self, sensor_name: str = "front_cam", source: int | str = 0) -> None:
         self.sensor_name = sensor_name
         self.source = source
         self._camera: Optional[Any] = None
@@ -23,7 +23,10 @@ class RealCameraReader:
             return
 
         try:
-            self._camera = cv2.VideoCapture(self.source)
+            source = str(self.source)
+            if source.isdigit():
+                source = int(source)
+            self._camera = cv2.VideoCapture(source)
         except Exception:
             self._camera = None
 

@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "terrain-scan-agent"
+version = "0.1.0"
+description = "Prototype terrain scanning agent for drone and robot workflows."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["opencv-python-headless>=4.8.0"]
+
+[project.optional-dependencies]
+test = ["pytest>=8.0.0"]
+
+[project.scripts]
+terrain-scan-dashboard = "terrain_scan_agent.web_dashboard:main"
+
+[tool.setuptools]
+packages = ["terrain_scan_agent"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

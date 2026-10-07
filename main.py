@@ -2,6 +2,8 @@ from terrain_scan_agent.control import Controller
 from terrain_scan_agent.field_runtime import FieldRuntime
 from terrain_scan_agent.mission import create_mission
 from terrain_scan_agent.processor import ProcessingPipeline
+from terrain_scan_agent.reporting import build_report, save_report, save_report_text
+from terrain_scan_agent.risk_map import build_risk_map, render_risk_map
 from terrain_scan_agent.sensor_fusion import SensorFusion
 from terrain_scan_agent.sensor_stream import SensorStream
 from terrain_scan_agent.sensors import SensorManager
@@ -44,6 +46,11 @@ def main() -> None:
         "lidar": [{"distance_m": 1.2, "obstacle": True}],
         "gps": [{"lat": 39.0, "lon": 35.0}],
     })
+    risk_map = build_risk_map([
+        {"x": 1, "y": 1, "risk": "high", "label": "obstacle"},
+        {"x": 2, "y": 3, "risk": "medium", "label": "anomaly"},
+        {"x": 5, "y": 5, "risk": "low", "label": "clear"},
+    ], width=8, height=8)
 
     print(render_summary(mission))
     print("\nSensors:")
@@ -64,6 +71,15 @@ def main() -> None:
 
     print("\nSensor fusion:")
     print(fusion_result)
+
+    print("\nRisk map:")
+    print(render_risk_map(risk_map))
+
+    report = build_report(mission, runtime_result, scan_result, fusion_result, risk_map)
+    report_file = save_report(report)
+    text_file = save_report_text(report)
+    print(f"\nReport saved to: {report_file}")
+    print(f"Summary saved to: {text_file}")
 
 
 if __name__ == "__main__":

@@ -15,6 +15,8 @@ from .planner import build_action_plan, generate_vehicle_commands
 from .processor import ProcessingPipeline
 from .px4_controller import PX4Controller
 from .real_camera import RealCameraReader
+from .reporting import build_report, save_report, save_report_text
+from .risk_map import build_risk_map, build_risk_report, generate_risk_map, render_risk_map
 from .robot_adapter import RobotAdapter
 from .ros_bridge import ROSBridge
 from .ros_mavlink_bridge import ROSMAVLinkBridge
@@ -25,6 +27,7 @@ from .sensors import SensorManager
 from .topic_controller import TopicController
 from .ui import render_summary
 from .vision import analyze_scan
+from .web_dashboard import DashboardServer, run_dashboard_server
 
 __all__ = [
     "build_action_plan",
@@ -52,6 +55,15 @@ __all__ = [
     "TopicController",
     "SafetyManager",
     "analyze_scan",
+    "build_risk_map",
+    "generate_risk_map",
+    "build_risk_report",
+    "render_risk_map",
     "render_summary",
     "build_dashboard_html",
+    "build_report",
+    "save_report",
+    "save_report_text",
+    "DashboardServer",
+    "run_dashboard_server",
 ]

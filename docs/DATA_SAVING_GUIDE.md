@@ -1,84 +1,45 @@
 # Data Saving Guide
 
-## Goal
+## Current persistence behavior
 
-This project can capture and process scan data, telemetry, and mission metadata. The repository is intentionally modular so that data can later be persisted to local disk, remote storage, or a database.
+Running `python main.py` builds an example mission report and writes:
 
-## Current data types
+```text
+artifacts/
+  mission_report.json
+  mission_summary.txt
+```
 
-### Mission metadata
-- prompt
-- vehicle type
-- flight or robot mission status
-- commands generated
-- safety summary
+The JSON report contains mission status, vehicle, plan action names, commands, selected runtime status, perception summary, fusion output, and risk-map summary metrics. The text summary contains the mission status, vehicle, risk level/score, summary, and commands. Use `terrain_scan_agent.reporting.save_report` and `save_report_text` to select another output directory or filename.
 
-### Sensor data
-- camera frames
-- GPS points
-- IMU values
-- LiDAR scan samples
+The current report does **not** archive raw camera frames, full GPS/IMU history, or complete LiDAR streams. The dashboard's `/api/status` endpoint serves the supplied in-memory payload plus current camera status; it is not a database or persistent telemetry store.
 
-### Analysis outputs
-- risk level
-- obstacle count
-- telemetry summaries
-- sensor fusion report
+## Risk map data
 
-## Recommended storage pattern
+`terrain_scan_agent.risk_map` accepts point-like observations with `x`/`y` grid coordinates and a risk score/label. It returns a numeric grid and hotspot list. It does not currently transform GPS latitude/longitude into a georeferenced map.
 
-Use a structured folder layout like:
+## Suggested future storage layout
 
 ```text
 output/
   missions/
     2026-10-07/
-      mission.json
+      mission_report.json
   telemetry/
     camera/
-    GPS/
+    gps/
     imu/
     lidar/
-  reports/
-    summary.json
-    dashboard.html
 ```
 
-## Suggested schema
+## Data handling recommendations
 
-```json
-{
-  "mission_id": "2026-10-07-001",
-  "vehicle": "drone",
-  "prompt": "Bu arazide tarama yap",
-  "status": "safe",
-  "altitude_m": 4.0,
-  "safety_margin_m": 5.0,
-  "commands": ["takeoff", "move_to_waypoint", "start_scan"],
-  "risk_level": "high",
-  "timestamp": "2026-10-07T12:00:00Z"
-}
-```
+- Use UTC timestamps and stable mission identifiers when extending the report schema.
+- Keep raw frames in a separate, access-restricted store; avoid placing large binary frames in JSON.
+- Avoid persisting camera URL credentials, access tokens, or unnecessary personal/location data.
+- Define retention, backup, access-control, and deletion policies before field use.
+- Treat simulated/fallback data as synthetic and mark it distinctly from device measurements.
 
-## Save flow
+## Future options
 
-1. mission is created
-2. control commands are generated
-3. sensor data is captured
-4. per-frame events are logged
-5. final summary is exported to JSON or HTML
-
-## Best practices
-
-- save raw payloads beside processed summaries
-- use UTC timestamps
-- compress large frame archives if necessary
-- avoid writing secrets or tokens into local logs
-- keep schema backward-compatible when evolving the project
-
-## Future upgrade path
-
-- local SQLite database
-- parquet or CSV exports for analysis
-- object storage (S3, MinIO)
-- web dashboard with live history
+SQLite, CSV/Parquet exports, or object storage can be added for historical telemetry; none is currently implemented as a persistent backend.

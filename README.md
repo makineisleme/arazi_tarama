@@ -1,73 +1,102 @@
 # Arazi Tarama Prototipi
 
-Bu proje, kamera ve sensör tabanlı arazi tarama için modüler bir örnek mimari sunar. Kullanıcıdan gelen doğal dil komutunu alan, güvenlik kontrolü yapan, senaryoyu planlayan ve ardından drone/robot için uyumlu eylem komutlarını üreten bir akış kurar.
+Kamera ve sensör tabanlı arazi taraması için drone/robot uyumlu, modüler bir Python prototipi. Örnek akış görev planı ve güvenlik kontrolü üretir; kamera, GPS/IMU ve LiDAR benzeri girdileri işler; risk özeti ve rapor oluşturur.
 
-## Özellikler
+## Mevcut özellikler
 
-- Doğal dil ile görev anlama
-- Güvenlik kontrollü misyon oluşturma
-- Drone / robot uyumlu komut üretimi
-- Canlı kamera ve fallback kamera akışı
-- LiDAR, GPS ve IMU verilerini birleştirme
-- ROS2 ve MAVLink benzeri köprü katmanları
-- PX4 benzeri güvenli uçuş komut katmanı
-- Saha çalışma akışı: canlı tarama + raporlama
-- gerçek kamera / GPS-IMU / mini dashboard entegre katmanları
-- gerçek cihaz benzeri veri akışı için fallback ve simülasyon desteği
+- Doğal dil görevinden basit plan ve drone/robot komutları üretme
+- Misyon yüksekliği ve güvenlik marjı için güvenlik kontrolleri
+- Simülasyon/fallback kamera, GPS/IMU, LiDAR, füzyon ve telemetri katmanları
+- x/y hücre koordinatlarından sayısal risk grid'i ve ASCII görünüm üretme
+- JSON ve metin misyon raporlarını `artifacts/` altına kaydetme
+- USB/OpenCV ve RTSP/HTTP kamera kaynağı için MJPEG web dashboard
+- Dashboard HTML sayfası, `/api/status` JSON endpoint'i ve `/stream.mjpg` görüntü akışı
+- Kamera erişilemiyorsa varsayılan placeholder/fallback akışı
 
-## Mevcut mimari
+Gerçek PX4/MAVLink, ROS2 ve sensör modülleri entegrasyon iskeletleri/adaptörleridir; bu prototip gerçek araçta otonom uçuş veya saha güvenliğini doğrulamaz.
 
-- terrain_scan_agent/planner.py: görev planı üretimi
-- terrain_scan_agent/mission.py: güvenlikli görev ve misyon oluşturma
-- terrain_scan_agent/control.py: temel kontrol akışı
-- terrain_scan_agent/sensors.py: sensör kayıt ve yönetimi
-- terrain_scan_agent/live_camera.py: canlı kamera ve fallback desteği
-- terrain_scan_agent/lidar_capture.py: LiDAR tarama
-- terrain_scan_agent/navigation_fusion.py: GPS + IMU füzyonu
-- terrain_scan_agent/ros_bridge.py: ROS benzeri yayın katmanı
-- terrain_scan_agent/mavlink_adapter.py: MAVLink benzeri komut adaptörü
-- terrain_scan_agent/ros_mavlink_bridge.py: ROS2/MAVLink köprü katmanı
-- terrain_scan_agent/px4_controller.py: güvenli PX4 benzeri uçuş kontrol katmanı
-- terrain_scan_agent/field_runtime.py: canlı saha tarama akışı
-- terrain_scan_agent/real_camera.py: gerçek kamera okuyucu ve fallback
-- terrain_scan_agent/gps_imu_driver.py: GPS + IMU veri sürücüsü
-- terrain_scan_agent/dashboard.py: mini dashboard HTML arayüzü
-- main.py: örnek tamamlanmış çalışma akışı
+## Kurulum
+
+Python 3.10+ ve pip gerekir. Kurulum betiği sanal ortamı oluşturur, gereksinimleri yükler ve projeyi editable modda kurar:
+
+```bash
+./setup.sh
+. .venv/bin/activate
+```
 
 ## Hızlı başlatma
 
+Örnek simülasyon akışı:
+
 ```bash
-cd /workspaces/arazi_tarama
-PYTHONPATH=/workspaces/arazi_tarama python main.py
+python main.py
 ```
 
-## Örnek görev
+Bu komut terminale misyon, telemetri ve risk özeti yazar; JSON ve metin raporlarını `artifacts/mission_report.json` ve `artifacts/mission_summary.txt` dosyalarına kaydeder.
+
+## Canlı web dashboard
+
+Varsayılan kamera indeksi `0` ile localhost dashboard'u başlatın:
+
+```bash
+terrain-scan-dashboard
+```
+
+Kamera kaynağı, yayın hızı ve örnek misyon raporu seçilebilir:
+
+```bash
+terrain-scan-dashboard --camera 1
+terrain-scan-dashboard --camera /dev/video0 --fps 8
+terrain-scan-dashboard --camera 'rtsp://user:password@camera-host/stream'
+terrain-scan-dashboard --camera /dev/video0 --report artifacts/mission_report.json
+```
+
+Varsayılan adresler:
+
+- Dashboard: `http://127.0.0.1:8000/`
+- Kamera akışı: `http://127.0.0.1:8000/stream.mjpg`
+- Durum API'si: `http://127.0.0.1:8000/api/status`
+
+Kamera açılamazsa sunucu varsayılan olarak bir placeholder görüntüsü yayınlar ve API'de `fallback` durumunu bildirir. Fallback'i kapatmak için `--no-camera-fallback` kullanın. Sunucu varsayılan olarak yalnızca `127.0.0.1` üzerinde dinler. `--host 0.0.0.0` ile ağ arayüzlerine açılabilir; ancak kimlik doğrulama veya TLS sunucuya dahil değildir. Bunu yalnızca güvenilir ağda, uygun erişim denetimi/ters proxy arkasında kullanın. Kamera URL'sindeki kullanıcı adı, parola ve query parametreleri status API yanıtında maskelenir.
+
+## Risk haritası kullanımı
+
+Risk haritası şu anda coğrafi/GPS haritası değil, x/y hücre koordinatlı bir grid'dir:
 
 ```python
-from terrain_scan_agent.planner import build_action_plan, generate_vehicle_commands
+from terrain_scan_agent.risk_map import build_risk_map, render_risk_map
 
-plan = build_action_plan("Bu arazide tarama yap ve riskli alanları bul")
-commands = generate_vehicle_commands(plan, vehicle="drone")
-print(plan)
-print(commands)
+risk_map = build_risk_map(
+    [
+        {"x": 1, "y": 1, "risk": "high", "label": "obstacle"},
+        {"x": 3, "y": 2, "risk": "medium", "label": "anomaly"},
+    ],
+    width=6,
+    height=6,
+)
+print(risk_map["summary"])
+print(render_risk_map(risk_map))
 ```
 
-## Test ve doğrulama
+## Testler
 
-Proje için temel regresyon testi hazırdır:
+Sanal ortam etkin durumdayken tüm testleri çalıştırın:
 
 ```bash
-cd /workspaces/arazi_tarama
-PYTHONPATH=/workspaces/arazi_tarama /usr/local/py-utils/venvs/pytest/bin/python -m pytest -q tests/test_action_planner.py
+python -m pytest -q
 ```
 
-Son doğrulama sonucu:
-- 25 passed in 0.03s
+Son doğrulama: **38 test geçti**. Fiziksel USB/RTSP kamera veya uçuş donanımı bu test ortamında doğrulanmış değildir.
 
-## Geliştirme hedefi
+## Proje rehberi
 
-Bu prototip, gerçek dünya entegrasyonu için temel iskelet ve güvenli operasyon modeli sunar. Mevcut sürüm, simülasyon ve gerçek cihaz benzeri akışlar için hazır bir temel sağlamaktadır; bir sonraki adım gerçek kamera, GPS/IMU ve PX4/MAVLink canlı akışı ile saha testlerine geçmektir.
+- [Mimari](docs/ARCHITECTURE.md)
+- [Uygulama bağlama ve çalıştırma](docs/UYGULAMA_BAGLAMA.md)
+- [Kendi sunucunda barındırma](docs/SELF_HOSTING_GUIDE.md)
+- [Veri kaydetme](docs/DATA_SAVING_GUIDE.md)
+- [Değişiklik günlüğü](docs/CHANGELOG.md)
+- [İlerleme durumu](progress.md)
 
-## Not
+## Güvenlik notu
 
-Bu örnek, üretim güvenlik katmanlarıyla birlikte çalışan bir prototype seviyesindedir. Gerçek drone/robot kontrolü için saha koşulları, kalibrasyon, bakım ve güvenlik politikaları eklenmelidir.
+Bu yazılım prototip düzeyindedir. Gerçek drone/robot kontrolünden önce bağımsız güvenlik sistemleri, saha prosedürleri, kalibrasyon ve yetkili testler gerekir. Bu depo tek başına uçuşa elverişlilik veya operasyonel güvenlik sağlamaz.

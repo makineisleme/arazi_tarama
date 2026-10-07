@@ -11,7 +11,7 @@ class LiveCameraCapture:
     realistic camera interface for real hardware integration later.
     """
 
-    def __init__(self, sensor_name: str, source: int = 0, fallback: bool = True) -> None:
+    def __init__(self, sensor_name: str, source: int | str = 0, fallback: bool = True) -> None:
         self.sensor_name = sensor_name
         self.source = source
         self.fallback = fallback
@@ -22,9 +22,6 @@ class LiveCameraCapture:
         self._maybe_open_camera()
 
     def _maybe_open_camera(self) -> None:
-        if not self.fallback:
-            return
-
         try:
             import cv2  # type: ignore
         except Exception:
@@ -32,7 +29,13 @@ class LiveCameraCapture:
             return
 
         try:
-            self._camera = cv2.VideoCapture(self.source)
+            source = str(self.source)
+            if source.isdigit():
+                source = int(source)
+            self._camera = cv2.VideoCapture(source)
+            if not self._camera.isOpened():
+                self._camera.release()
+                self._camera = None
         except Exception:
             self._camera = None
 
@@ -60,6 +63,7 @@ class LiveCameraCapture:
                         "timestamp": time.time(),
                         "shape": (height, width, 3),
                         "risk": "normal",
+                        "status": "ok",
                         "frame": frame,
                     }
                     return payload
@@ -74,6 +78,7 @@ class LiveCameraCapture:
                 "timestamp": time.time(),
                 "shape": (480, 640, 3),
                 "risk": "normal",
+                "status": "fallback",
                 "frame": None,
             }
             return payload
@@ -91,3 +96,8 @@ class LiveCameraCapture:
             "frame_count": len(self._frames),
             "risk_count": risk_count,
         }
+
+    def close(self) -> None:
+        if self._camera is not None:
+            self._camera.release()
+            self._camera = None

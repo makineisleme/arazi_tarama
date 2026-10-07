@@ -1,129 +1,80 @@
 # Arazi Tarama Projesi - Progress
 
-## 1. Başlangıç hedefi
+## Amaç
 
-Amaç, kamera ve sensör tabanlı arazi tarama için modüler bir prototype kurmaktır. Sistem, kullanıcıdan gelen doğal dil komutunu alıp güvenlik sınırlarını kontrol eden, uygun plan üreten ve drone/robot için uyumlu eylem komutları çıkaran bir akış oluşturmalıdır.
+Kamera ve sensör tabanlı arazi taraması için modüler bir drone/robot prototipi geliştirmek: görev isteğini planlamak, güvenlik kontrollerini uygulamak, sensör verisini işlemek ve sonucu kullanıcıya sunmak.
 
-## 2. Ulaşılan durum
+## Mevcut durum
 
-### Yapıldı
-- [x] Temel görev planlayıcı hazır
-- [x] Drone/robot komut üretimi çalışıyor
-- [x] Güvenlik kontrolü eklendi
-- [x] Sensör kayıt katmanı hazır
-- [x] Kontrol katmanı hazır
-- [x] Görsel/scan risk analizi hazır
-- [x] Kullanıcı çıktısı için özetleme katmanı hazır
-- [x] Kamera yakalama modülü eklendi
-- [x] Canlı kamera katmanı eklendi
-- [x] LiDAR tarama modülü eklendi
-- [x] GPS/IMU navigasyon füzyon katmanı eklendi
-- [x] ROS2/MAVLink köprü katmanı eklendi
-- [x] PX4 güvenli uçuş komut katmanı eklendi
-- [x] Saha çalışma akışı ve canlı tarama runtime katmanı eklendi
-- [x] Gerçek kamera okuyucu ve fallback katmanı eklendi
-- [x] GPS/IMU sürücü katmanı eklendi
-- [x] Mini dashboard arayüzü eklendi
-- [x] Sensör füzyon katmanı eklendi
-- [x] Tüm çalışma akışı örnek girişten çalıştırılabilir durumda
+### Tamamlandı
 
-### Yapılmadı / devam edenler
-- [ ] Gerçek USB/RTSP/OpenCV canlı kamera akışı için saha kurulumu
-- [ ] Gerçek GPS/IMU sensör akışı ile canlı korelasyon
-- [ ] Gerçek PX4/MAVLink uçuş modülü ile canlı yayın testi
-- [ ] Harita / risk haritası / görsel raporlama çıktısı
-- [ ] Web arayüzü veya mobil kontrol paneli
-- [ ] Gerçek saha testleri ve uçuş/robot doğrulaması
+- [x] Doğal dil girdisinden temel tarama planı ve araç komutları üretimi
+- [x] Misyon oluşturma, yükseklik ve güvenlik marjı kontrolleri
+- [x] Drone/robot komut adaptörleri ve PX4/MAVLink/ROS benzeri entegrasyon iskeletleri
+- [x] Sensör kayıt, kamera, LiDAR, GPS/IMU, füzyon ve telemetri modülleri
+- [x] Donanım bulunmayan ortamlarda kamera fallback akışı
+- [x] x/y hücre koordinatlarından risk grid'i ve terminal ASCII görünümü
+- [x] JSON misyon raporu ve metin özeti dışa aktarımı (`artifacts/`)
+- [x] Yerel web dashboard: HTML arayüzü, `/api/status` ve paylaşımlı MJPEG `/stream.mjpg`
+- [x] Dashboard CLI ile kamera kaynağı, host, port ve FPS seçimi
+- [x] Dashboard'un önceki JSON raporunu yükleyebilmesi
+- [x] Kamera URL kullanıcı bilgileri ve query parametrelerinin API'de gizlenmesi
+- [x] Paket kurulumu ve `terrain-scan-dashboard` komutu
+- [x] Dashboard güvenlik/endpoint/stream davranışları için testler
 
-## 3. Proje katmanları
+### Devam ediyor / donanımda doğrulanmadı
 
-### 3.1 Planlama katmanı
-- [x] Kullanıcı talebini anlama
-- [x] Tarama, analiz ve raporlama adımlarını üretme
-- [x] build_action_plan ile görev planı oluşturma
+- [ ] USB veya RTSP kamera ile hedef saha ortamında bağlantı ve görüntü kalitesi doğrulaması
+- [ ] Gerçek GPS/IMU sürücüsü ve zaman/konum korelasyonu
+- [ ] Gerçek PX4/MAVLink/ROS2 donanım bağlantısı ve kontrollü saha testi
+- [ ] GPS koordinatlarına bağlanan coğrafi risk haritası
+- [ ] Uçuş/robot prosedürleri, kalibrasyon ve saha güvenliği doğrulaması
 
-### 3.2 Misyon katmanı
-- [x] Planı güvenli operasyonlara dönüştürme
-- [x] Yükseklik ve güvenlik marjı kontrolü
-- [x] create_mission ile durum üretimi
+## Katmanlar
 
-### 3.3 Araç kontrol katmanı
-- [x] Drone/robot komutlarını temsil etme
-- [x] Controller.execute ile komut yürütme
-- [x] PX4Controller ile güvenli uçuş komutları
+### Planlama ve misyon
+- [x] Görev planı: `terrain_scan_agent/planner.py`
+- [x] Misyon ve güvenlik değerlendirmesi: `terrain_scan_agent/mission.py`, `terrain_scan_agent/safety.py`
 
-### 3.4 Sensör katmanı
-- [x] SensorManager ile sensör kaydı
-- [x] Kamera, GPS, IMU ve LiDAR benzeri bileşenlerin yönetimi
-- [x] LiveCameraCapture ve LidarCapture için kontrolsüz gerçek ortam fallback desteği
+### Sensörler ve analiz
+- [x] Kamera ve fallback: `terrain_scan_agent/live_camera.py`, `terrain_scan_agent/real_camera.py`
+- [x] GPS/IMU, navigasyon füzyonu ve LiDAR
+- [x] Risk analizi, sensör füzyonu ve telemetri işleme
+- [x] Hücre tabanlı risk haritası: `terrain_scan_agent/risk_map.py`
 
-### 3.5 Görüntü ve algılama katmanı
-- [x] analyze_scan ile risk seviyesini hesaplama
-- [x] Anomali ve engel yoğunluğuna göre yüksek/orta/düşük risk
-- [x] CameraCapture ile frame takibi
-- [x] LiveCameraCapture ile canlı kamera akışı ve fallback desteği
-- [x] LidarCapture ile LiDAR tarama ve engel tespiti
-- [x] SensorFusion ile kamera + LiDAR + GPS birleşimi
-- [x] NavigationFusion ile GPS + IMU yönetimi
+### Runtime, rapor ve arayüz
+- [x] Örnek saha akışı: `terrain_scan_agent/field_runtime.py`, `main.py`
+- [x] JSON/metin raporları: `terrain_scan_agent/reporting.py`
+- [x] Canlı web dashboard: `terrain_scan_agent/web_dashboard.py`, `terrain_scan_agent/dashboard.py`
+- [x] HTML sayfasında misyon bilgisi ve periyodik API durum yenilemesi
+- [x] Paylaşılan kamera yakalama döngüsünden MJPEG video akışı
 
-### 3.6 Saha çalışma runtime katmanı
-- [x] FieldRuntime ile canlı tarama akışı bütünleşmesi
-- [x] Kamera, kontrol ve navigasyon tek akışta koordine edilmesi
-- [x] Gerçek cihaz benzeri akış ve fallback desteği
-- [x] Toplu rapor üretimi
+## Doğrulama
 
-### 3.7 Kullanıcı arayüzü / özetleme
-- [x] render_summary ile net rapor çıktısı
-- [x] dashboard HTML rapor arayüzü
-
-## 4. Mevcut test durumu
-
-Testler çalışıyor ve başarıyla geçiyor:
-
-- [x] plan oluşturma
-- [x] drone komut üretimi
-- [x] robot komut üretimi
-- [x] güvenli mission oluşturma
-- [x] sensör kayıt kontrolü
-- [x] risk analizi testi
-- [x] komut yürütme testi
-- [x] kamera yakalama testi
-- [x] sensör füzyon testi
-- [x] PX4 güvenli komut testi
-- [x] saha runtime testi
-- [x] gerçek kamera testi
-- [x] GPS/IMU testi
-- [x] dashboard testi
-
-## 5. Doğrulanan çalışma
-
-Aşağıdaki komutlar çalıştırıldı ve başarılı sonuç verdi:
+Sanal ortamı kurup testleri çalıştırma:
 
 ```bash
-cd /workspaces/arazi_tarama && PYTHONPATH=/workspaces/arazi_tarama /usr/local/py-utils/venvs/pytest/bin/python -m pytest -q tests/test_action_planner.py
-cd /workspaces/arazi_tarama && PYTHONPATH=/workspaces/arazi_tarama /usr/local/py-utils/venvs/pytest/bin/python main.py
+./setup.sh
+. .venv/bin/activate
+python -m pytest -q
 ```
 
-Sonuç:
-- 25 passed in 0.03s
-- örnek mission başarıyla çalıştı
-- drone komutları üretildi
-- risk analizi çalıştı
-- kamera + LiDAR + GPS füzyon çıktısı üretildi
-- gerçek kamera / GPS-IMU / dashboard katmanları başarılı şekilde çalıştı
-- saha runtime akışı başarıyla tamamlandı
+Son doğrulama sonucu: **38 test geçti**.
 
-## 6. Sonraki aşama önerisi
+Dashboard smoke testinde HTML sayfası, durum API'si ve JPEG frame içeren multipart stream doğrulandı. Test cihazı olmadığı için kamera fallback görüntüsü kullanıldı; gerçek USB/RTSP cihaz bağlantısı bu ortamda denenmedi.
 
-Bir sonraki evrede şunlar yapılabilir:
+Örnek demo:
 
-- [ ] Gerçek USB/RTSP/OpenCV canlı kamera akışı
-- [ ] Gerçek GPS/IMU sensör akışı
-- [ ] Gerçek PX4/MAVLink canlı uçuş testi
-- [ ] Harita / risk haritası / görsel raporlama çıktısı
-- [ ] Web arayüzü veya mobil kontrol paneli
-- [ ] Saha koşullarında doğrulama ve raporlama
+```bash
+python main.py
+```
 
-## 7. Kısa özet
+Dashboard:
 
-Proje şu anda kapsamlı bir prototype seviyesindedir: doğal dil komutunu alır, güvenli operasyon planı üretir, araç komutlarını çevirir, sensörleri yönetir, risk analizi yapar, canlı saha runtime içinde kamera, navigasyon ve kontrol katmanlarını birlikte koordine eder ve gerçek cihaz benzeri veri akışları için hazır bir taban sunar. Geriye kalan iş, bunları gerçek cihaz akışları ve saha entegrasyonu ile canlı sistem seviyesine taşımaktır.
+```bash
+terrain-scan-dashboard --camera /dev/video0 --report artifacts/mission_report.json
+```
+
+## Kapsam ve güvenlik notu
+
+Risk grid'i şu an GPS koordinatlarından üretilen coğrafi harita değildir. PX4/MAVLink/ROS sınıfları gerçek araç üzerinde doğrulanmış uçuş kontrolü anlamına gelmez. Gerçek araçlarda kullanım öncesinde bağımsız güvenlik katmanları ve yetkili saha testleri gerekir. Web sunucusunda yerleşik kimlik doğrulama/TLS yoktur; varsayılan olarak yalnızca localhost'ta dinler.

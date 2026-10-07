@@ -8,7 +8,9 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 pip install -r requirements.txt
+pip install -e .
 
 printf '\nKurulum tamamlandi. Calistirmak icin:\n'
 printf '  source .venv/bin/activate\n'
 printf '  PYTHONPATH="$PWD" python main.py\n'
+printf '  terrain-scan-dashboard\n'

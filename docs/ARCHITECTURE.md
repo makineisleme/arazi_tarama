@@ -1,82 +1,64 @@
-# Architecture
+# Mimari
 
-## Overview
+## Genel bakış
 
-This project implements a layered prototype for terrain scanning using a drone/robot, camera, GPS, IMU, and LiDAR-inspired inputs. The system is designed to convert user intent into a safe, executable mission and then provide telemetry, analysis, and reporting.
+Proje; görev planlama, misyon güvenlik kontrolleri, sensör edinimi, analiz, raporlama ve yerel web sunumundan oluşan katmanlı bir Python prototipidir. Demo akışı simülasyon/fallback girdileriyle donanım olmadan çalışabilir.
 
-## Main layers
+## Katmanlar
 
-### 1. Planning layer
-- `terrain_scan_agent/planner.py`
-- Converts natural-language requests into action steps.
-- Produces structured mission actions such as scan, capture, analyze, report.
+### 1. Planlama ve misyon güvenliği
 
-### 2. Mission and safety layer
-- `terrain_scan_agent/mission.py`
-- `terrain_scan_agent/safety.py`
-- Builds mission context and validates altitude, margin, and operational safety limits.
-- Prevents unsafe missions from reaching execution.
+- `terrain_scan_agent/planner.py`: kullanıcı isteğini basit eylem planına ve araç komutlarına dönüştürür.
+- `terrain_scan_agent/mission.py`: misyonu oluşturur ve `terrain_scan_agent/safety.py` üzerinden sınırları değerlendirir.
 
-### 3. Control layer
-- `terrain_scan_agent/control.py`
-- `terrain_scan_agent/px4_controller.py`
-- Converts mission commands into executable control actions for a drone or robot.
+### 2. Araç kontrol adaptörleri
 
-### 4. Sensor and acquisition layer
-- `terrain_scan_agent/sensors.py`
-- `terrain_scan_agent/live_camera.py`
-- `terrain_scan_agent/real_camera.py`
-- `terrain_scan_agent/lidar_capture.py`
-- `terrain_scan_agent/gps_imu_driver.py`
-- `terrain_scan_agent/navigation_fusion.py`
-- Manages device registration, frame capture, GPS/IMU readouts, LiDAR scans, and fused navigation state.
+- `terrain_scan_agent/control.py`: örnek komut yürütme arayüzü.
+- `terrain_scan_agent/px4_controller.py`, `mavlink_adapter.py`, `ros_bridge.py`, `ros_mavlink_bridge.py`: kontrol protokolü adaptörleri/iskeletleri.
 
-### 5. Perception and analytics layer
-- `terrain_scan_agent/vision.py`
-- `terrain_scan_agent/sensor_fusion.py`
-- `terrain_scan_agent/processor.py`
-- Computes risk, obstacles, and aggregated telemetry summaries.
+Bu sınıfların başarılı örnek çıktısı gerçek araç bağlantısı veya gerçek uçuş emniyeti doğrulaması değildir.
 
-### 6. Integration and transport layer
-- `terrain_scan_agent/ros_bridge.py`
-- `terrain_scan_agent/mavlink_adapter.py`
-- `terrain_scan_agent/ros_mavlink_bridge.py`
-- `terrain_scan_agent/topic_controller.py`
-- Bridges logical actions into ROS-style or MAVLink-like command flows.
+### 3. Sensör edinimi ve füzyon
 
-### 7. Runtime and presentation layer
-- `terrain_scan_agent/field_runtime.py`
-- `terrain_scan_agent/dashboard.py`
-- `terrain_scan_agent/ui.py`
-- Orchestrates the full demo run and generates user-facing summary data.
+- Kamera: `live_camera.py`, `real_camera.py`
+- GPS/IMU: `gps_imu_driver.py`, `navigation_fusion.py`
+- LiDAR: `lidar_capture.py`
+- Sensör yönetimi/akışı: `sensors.py`, `sensor_stream.py`
+- Birleştirme ve işleme: `sensor_fusion.py`, `processor.py`
 
-## Runtime flow
+OpenCV kamera kaynağı integer indeks, cihaz yolu veya RTSP/HTTP URL'si olabilir. Headless/test ortamlarında fallback kullanılabilir.
 
-1. User prompt enters the planner.
-2. Mission is created and safety-checked.
-3. Control commands are generated.
-4. Camera, GPS, IMU, and LiDAR data are acquired.
-5. Telemetry is fused and processed.
-6. Risks are identified.
-7. Report and dashboard output are generated.
+### 4. Algılama, risk ve rapor
 
-## Safety principles
+- `vision.py`: örnek risk sınıflandırma sezgiseli.
+- `risk_map.py`: x/y hücre girdilerinden sayısal grid ve ASCII çıktı üretir; GPS koordinatlarını projeksiyonla haritaya dönüştürmez.
+- `reporting.py`: normalleştirilmiş misyon raporunu JSON ve metin olarak kaydeder.
 
-- altitude limits are enforced
-- minimum safety margin is required
-- mission execution stops when the operation is unsafe
-- camera fallback logic prevents crash in headless environments
+### 5. Runtime ve dashboard
 
-## Extension points
+- `field_runtime.py`: örnek saha akışında misyon, kamera, navigasyon ve kontrol katmanlarını koordine eder.
+- `dashboard.py`: dashboard HTML'ini üretir ve HTML'e eklenen kullanıcı verilerini escape eder.
+- `web_dashboard.py`: standart kütüphane HTTP sunucusu üzerinden `/`, `/api/status` ve `/stream.mjpg` sağlar.
 
-- replace simulated drivers with real hardware adapters
-- add database persistence for telemetry
-- add REST API or websocket dashboard
-- add real PX4 or ROS2 integration
-- add map generation and georeferenced risk layers
+MJPEG istemcileri tek bir paylaşılan kamera yakalama thread'inden kare alır. Kamera kaynak URL'sindeki kullanıcı bilgileri ve query parametreleri API'de gösterilmez. Kamera açılmazsa fallback açıkken placeholder JPEG yayınlanır.
 
-## Project entrypoint
+## Temel akış
 
-- `main.py` executes the full sample workflow.
-- `run.sh` loads the local virtual environment and runs the application.
-- `setup.sh` installs dependencies and initializes the project environment.
+1. İstek eylem planına çevrilir.
+2. Misyon oluşturulur ve basit güvenlik sınırları kontrol edilir.
+3. Demo/runtime sensör verisi alır ve füzyon/analiz yapar.
+4. Risk grid'i ve JSON/metin raporu üretilir.
+5. Dashboard başlangıç raporunu gösterebilir ve kamera durumunu API üzerinden yeniler.
+
+## Çalıştırma yüzeyleri
+
+- `python main.py`: simülasyon örneği; `artifacts/` altına rapor yazar.
+- `terrain-scan-dashboard`: canlı HTTP dashboard.
+- `setup.sh`: sanal ortam, requirements ve editable paket kurulumu.
+
+## Güvenlik ve sınırlar
+
+- Dashboard varsayılan olarak `127.0.0.1` üzerinde dinler.
+- HTTP sunucusunda kimlik doğrulama/TLS yoktur. `--host 0.0.0.0` yalnızca güvenilir, erişim kontrollü ağlarda kullanılmalıdır.
+- Gerçek donanım entegrasyonu ve uçuş emniyeti bu prototipte doğrulanmamıştır.
+- Fallback, donanım yokluğunda demoyu devam ettirir; sentetik kare gerçek sensör verisi olarak yorumlanmamalıdır.

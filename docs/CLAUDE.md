@@ -21,7 +21,15 @@ cd /workspaces/arazi_tarama
 ### Run tests
 ```bash
 cd /workspaces/arazi_tarama
-PYTHONPATH=/workspaces/arazi_tarama /usr/local/py-utils/venvs/pytest/bin/python -m pytest -q tests/test_action_planner.py
+. .venv/bin/activate
+python -m pytest -q
+```
+
+### Run the live dashboard
+```bash
+cd /workspaces/arazi_tarama
+. .venv/bin/activate
+terrain-scan-dashboard --camera /dev/video0
 ```
 
 ## Important project conventions
@@ -60,5 +68,7 @@ PYTHONPATH=/workspaces/arazi_tarama /usr/local/py-utils/venvs/pytest/bin/python 
 
 - Do not assume real hardware is available.
 - Use synthetic or fallback behavior when headless or offline.
+- The dashboard has no built-in authentication or TLS; keep it on localhost or behind appropriate access controls.
+- Distinguish fallback frames and simulated sensor values from real device measurements.
 - Keep interfaces minimal and testable.
 - Favor compatibility with a drone/robot controller abstraction rather than a single vendor integration.
