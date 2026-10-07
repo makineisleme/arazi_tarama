@@ -275,3 +275,20 @@ def test_px4_controller_sends_safe_flight_commands():
     assert result["sent_count"] == 2
     assert result["commands"][0]["command"] == "arm"
     assert result["safe"] is True
+
+
+def test_field_runtime_builds_live_scan_report():
+    from terrain_scan_agent.field_runtime import FieldRuntime
+
+    runtime = FieldRuntime(vehicle="drone")
+    result = runtime.run_scan(
+        "Bu arazide riskli alanları tarat ve raporla",
+        altitude_m=4,
+        safety_margin_m=6,
+    )
+
+    assert result["status"] == "safe"
+    assert result["vehicle"] == "drone"
+    assert result["camera"]["sensor"] == "front_cam"
+    assert result["navigation"]["position_ready"] is True
+    assert result["report"]["summary"]

@@ -3,6 +3,7 @@
 from .camera_capture import CameraCapture
 from .control import Controller
 from .drone_adapter import DroneAdapter
+from .field_runtime import FieldRuntime
 from .lidar_capture import LidarCapture
 from .live_camera import LiveCameraCapture
 from .mavlink_adapter import MAVLinkAdapter
@@ -33,6 +34,7 @@ __all__ = [
     "NavigationFusion",
     "CameraCapture",
     "LiveCameraCapture",
+    "FieldRuntime",
     "LidarCapture",
     "ProcessingPipeline",
     "Controller",
