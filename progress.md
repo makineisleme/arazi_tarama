@@ -19,6 +19,7 @@ Amaç, kamera ve sensör tabanlı arazi tarama için yerleşik/embedded yapay ze
 - [x] LiDAR tarama modülü eklendi
 - [x] GPS/IMU navigasyon füzyon katmanı eklendi
 - [x] ROS2/MAVLink köprü katmanı eklendi
+- [x] PX4 güvenli uçuş komut katmanı eklendi
 - [x] Sensör füzyon katmanı eklendi
 - [x] Tüm çalışma akışı örnek girişten çalıştırılabilir durumda
 

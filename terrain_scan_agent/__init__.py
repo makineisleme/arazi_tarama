@@ -10,6 +10,7 @@ from .mission import create_mission, evaluate_safety
 from .navigation_fusion import NavigationFusion
 from .planner import build_action_plan, generate_vehicle_commands
 from .processor import ProcessingPipeline
+from .px4_controller import PX4Controller
 from .robot_adapter import RobotAdapter
 from .ros_bridge import ROSBridge
 from .ros_mavlink_bridge import ROSMAVLinkBridge
@@ -39,6 +40,7 @@ __all__ = [
     "RobotAdapter",
     "ROSBridge",
     "ROSMAVLinkBridge",
+    "PX4Controller",
     "MAVLinkAdapter",
     "TopicController",
     "SafetyManager",

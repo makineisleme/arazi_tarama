@@ -259,3 +259,19 @@ def test_ros2_mavlink_bridge_emits_vehicle_commands():
     assert result["vehicle"] == "drone"
     assert result["published_count"] == 2
     assert result["topics"][0] == "/mavros/set_mode"
+
+
+def test_px4_controller_sends_safe_flight_commands():
+    from terrain_scan_agent.px4_controller import PX4Controller
+
+    controller = PX4Controller(vehicle="drone")
+    result = controller.send_commands([
+        {"command": "arm", "value": True},
+        {"command": "takeoff", "value": 5.0},
+    ])
+
+    assert result["status"] == "ok"
+    assert result["vehicle"] == "drone"
+    assert result["sent_count"] == 2
+    assert result["commands"][0]["command"] == "arm"
+    assert result["safe"] is True
