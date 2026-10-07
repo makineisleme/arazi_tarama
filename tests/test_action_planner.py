@@ -292,3 +292,40 @@ def test_field_runtime_builds_live_scan_report():
     assert result["camera"]["sensor"] == "front_cam"
     assert result["navigation"]["position_ready"] is True
     assert result["report"]["summary"]
+
+
+def test_real_camera_reader_exposes_frame_and_status():
+    from terrain_scan_agent.real_camera import RealCameraReader
+
+    reader = RealCameraReader("front_cam", source=0)
+    data = reader.read_frame()
+
+    assert data["sensor"] == "front_cam"
+    assert data["source"] == 0
+    assert "status" in data
+    assert data["status"] in {"ok", "fallback"}
+
+
+def test_gps_imu_driver_returns_navigation_data():
+    from terrain_scan_agent.gps_imu_driver import GPSIMUDriver
+
+    driver = GPSIMUDriver()
+    result = driver.read()
+
+    assert result["status"] == "ok"
+    assert result["position"]["lat"]
+    assert result["attitude"]["yaw_deg"] is not None
+
+
+def test_dashboard_html_contains_project_status():
+    from terrain_scan_agent.dashboard import build_dashboard_html
+
+    html = build_dashboard_html({
+        "status": "safe",
+        "vehicle": "drone",
+        "summary": "Scan ready",
+    })
+
+    assert "safe" in html.lower()
+    assert "drone" in html.lower()
+    assert "Scan ready" in html

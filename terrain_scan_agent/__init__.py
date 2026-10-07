@@ -2,8 +2,10 @@
 
 from .camera_capture import CameraCapture
 from .control import Controller
+from .dashboard import build_dashboard_html
 from .drone_adapter import DroneAdapter
 from .field_runtime import FieldRuntime
+from .gps_imu_driver import GPSIMUDriver
 from .lidar_capture import LidarCapture
 from .live_camera import LiveCameraCapture
 from .mavlink_adapter import MAVLinkAdapter
@@ -12,6 +14,7 @@ from .navigation_fusion import NavigationFusion
 from .planner import build_action_plan, generate_vehicle_commands
 from .processor import ProcessingPipeline
 from .px4_controller import PX4Controller
+from .real_camera import RealCameraReader
 from .robot_adapter import RobotAdapter
 from .ros_bridge import ROSBridge
 from .ros_mavlink_bridge import ROSMAVLinkBridge
@@ -34,6 +37,8 @@ __all__ = [
     "NavigationFusion",
     "CameraCapture",
     "LiveCameraCapture",
+    "RealCameraReader",
+    "GPSIMUDriver",
     "FieldRuntime",
     "LidarCapture",
     "ProcessingPipeline",
@@ -48,4 +53,5 @@ __all__ = [
     "SafetyManager",
     "analyze_scan",
     "render_summary",
+    "build_dashboard_html",
 ]
