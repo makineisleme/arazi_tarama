@@ -1,21 +1,38 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict, Optional
 
 from .control import Controller
+from .gps_imu_driver import GPSIMUDriver
 from .live_camera import LiveCameraCapture
 from .mission import create_mission
 from .navigation_fusion import NavigationFusion
 from .px4_controller import PX4Controller
+from .real_camera import RealCameraReader
 
 
 class FieldRuntime:
     """Unify live camera, navigation, and flight control into one scan runtime."""
 
-    def __init__(self, vehicle: str = "drone", camera_name: str = "front_cam") -> None:
+    def __init__(
+        self,
+        vehicle: str = "drone",
+        camera_name: str = "front_cam",
+        camera_source: Any = 0,
+        gps_source: Optional[str] = None,
+        gps_mode: str = "simulated",
+    ) -> None:
         self.vehicle = (vehicle or "drone").lower()
         self.camera_name = camera_name
-        self.camera = LiveCameraCapture(camera_name, source=0, fallback=True)
+        self.camera = LiveCameraCapture(camera_name, source=camera_source, fallback=True)
+        self.camera_reader = RealCameraReader(sensor_name=camera_name, source=camera_source)
+        self.gps_driver = GPSIMUDriver(
+            lat=39.0,
+            lon=35.0,
+            altitude_m=3.0,
+            source=gps_source,
+            mode=gps_mode,
+        )
         self.navigation = NavigationFusion()
         self.controller = Controller(vehicle=self.vehicle)
         self.px4 = PX4Controller(vehicle=self.vehicle)
@@ -44,9 +61,10 @@ class FieldRuntime:
             }
 
         camera_frame = self.camera.capture_frame()
+        gps_state = self.gps_driver.read()
         navigation = self.navigation.combine({
-            "gps": [{"lat": 39.0, "lon": 35.0, "altitude_m": altitude_m}],
-            "imu": [{"roll": 0.0, "pitch": 0.2, "yaw": 12.0}],
+            "gps": [{"lat": gps_state["position"]["lat"], "lon": gps_state["position"]["lon"], "altitude_m": gps_state["position"]["altitude_m"]}],
+            "imu": [{"roll": 0.0, "pitch": 0.2, "yaw": gps_state["attitude"]["yaw_deg"]}],
         })
         control_result = self.controller.execute(mission["commands"])
         flight_result = self.px4.send_commands([
@@ -74,6 +92,7 @@ class FieldRuntime:
                 "frame_id": camera_frame["frame_id"],
                 "risk": camera_frame.get("risk", "normal"),
             },
+            "gps": gps_state,
             "navigation": navigation,
             "controller": control_result,
             "flight": flight_result,

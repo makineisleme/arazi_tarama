@@ -1,5 +1,5 @@
-from terrain_scan_agent.camera_capture import CameraCapture
 from terrain_scan_agent.control import Controller
+from terrain_scan_agent.field_runtime import FieldRuntime
 from terrain_scan_agent.mission import create_mission
 from terrain_scan_agent.processor import ProcessingPipeline
 from terrain_scan_agent.sensor_fusion import SensorFusion
@@ -28,8 +28,8 @@ def main() -> None:
     camera_stream.capture({"frame": 1, "risk": "normal"})
     camera_stream.capture({"frame": 2, "risk": "obstacle"})
 
-    camera_capture = CameraCapture("front_cam")
-    camera_capture.capture({"frame_id": 1, "risk": "obstacle"})
+    runtime = FieldRuntime(vehicle="drone", camera_name="front_cam", camera_source=0, gps_mode="simulated")
+    runtime_result = runtime.run_scan(user_prompt, altitude_m=3.0, safety_margin_m=5.0)
 
     controller = Controller(vehicle="drone")
     command_result = controller.execute(mission["commands"])
@@ -40,7 +40,7 @@ def main() -> None:
         "imu": [{"yaw": 10.0, "pitch": 2.0}],
     })
     fusion_result = SensorFusion().combine({
-        "camera": camera_capture.state()["frames"],
+        "camera": [{"frame_id": 1, "risk": "obstacle"}],
         "lidar": [{"distance_m": 1.2, "obstacle": True}],
         "gps": [{"lat": 39.0, "lon": 35.0}],
     })
@@ -49,6 +49,9 @@ def main() -> None:
     print("\nSensors:")
     for sensor in sensor_manager.summary()["sensors"]:
         print(f"- {sensor['name']} ({sensor['kind']})")
+
+    print("\nField runtime:")
+    print(runtime_result)
 
     print("\nController:")
     print(command_result)

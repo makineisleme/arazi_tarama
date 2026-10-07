@@ -1,19 +1,30 @@
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 
 class GPSIMUDriver:
     """A simple GPS + IMU driver abstraction for field navigation data."""
 
-    def __init__(self, lat: float = 39.0, lon: float = 35.0, altitude_m: float = 4.0) -> None:
+    def __init__(
+        self,
+        lat: float = 39.0,
+        lon: float = 35.0,
+        altitude_m: float = 4.0,
+        source: Optional[str] = None,
+        mode: str = "simulated",
+    ) -> None:
         self.lat = lat
         self.lon = lon
         self.altitude_m = altitude_m
+        self.source = source
+        self.mode = mode.lower()
 
     def read(self) -> Dict[str, Any]:
         return {
             "status": "ok",
+            "mode": self.mode,
+            "source": self.source,
             "position": {
                 "lat": self.lat,
                 "lon": self.lon,

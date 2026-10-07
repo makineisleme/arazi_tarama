@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 
 
 class PX4Controller:
@@ -10,15 +10,26 @@ class PX4Controller:
         self.vehicle = vehicle
         self._history: List[Dict[str, Any]] = []
 
-    def send_commands(self, commands: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def send_commands(self, commands: List[Union[str, Dict[str, Any]]]) -> Dict[str, Any]:
         safe = True
         sent: List[Dict[str, Any]] = []
 
         for command in commands:
-            name = str(command.get("command", "")).strip()
-            value = command.get("value")
-            if name in {"arm", "takeoff"} and value is None:
+            if isinstance(command, str):
+                name = command.strip()
+                value = None
+            elif isinstance(command, dict):
+                name = str(command.get("command", "")).strip()
+                value = command.get("value")
+            else:
+                raise TypeError("PX4 commands must be strings or dicts with a command field.")
+
+            if not name:
+                continue
+
+            if name in {"arm", "takeoff"} and value is None and isinstance(command, dict):
                 safe = False
+
             sent.append({"command": name, "value": value})
             self._history.append({"command": name, "value": value})
 
